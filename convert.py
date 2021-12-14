@@ -24,49 +24,34 @@ ExcelRowNum = {
     41:"AO", 42:"AP", 43:"AQ", 44:"AR", 45:"AS", 46:"AT"
 }
 
-class ExcelDataExtract(object):
-    def read_excel(self, filename="", password=""):
-        self.all_sheet_content = {}
-        pwd_require_status = False
 
-        if password == "":
-            pwd_require_status = False
-        else:
-            pwd_require_status = True
-        
-        pythoncom.CoInitialize()
-        xlsApp = DispatchEx("Excel.Application")
-        xlsApp.DisplayAlerts = False
-        xlsApp.Visible = False
+def read_excel(self, filename="", password=""):
+    all_sheet_content = {}
+    
+    pythoncom.CoInitialize()
+    xlsApp = DispatchEx("Excel.Application")
+    xlsApp.DisplayAlerts = False
+    xlsApp.Visible = False
 
-        if pwd_require_status:
-            try:
-                workbook = xlsApp.Workbooks.Open(filename, UpdateLinks=False, ReadOnly=False, Format=None, Password=password, WriteResPassword=password)
-            except:
-                xlsApp.DisplayAlerts = True
-                xlsApp.Quit()
-                pythoncom.CoUninitialize()
-                return False
-        else:
-            try:
-                workbook = xlsApp.Workbooks.Open(filename, UpdateLinks=False, ReadOnly=False, Format=None)
-            except:
-                xlsApp.DisplayAlerts = True
-                xlsApp.Quit()
-                pythoncom.CoUninitialize()
-                return False
-
-        for sheet in workbook.Sheets:
-            shtName = sheet.Name
-            shtContent = sheet.UsedRange.Value
-            self.all_sheet_content.update({shtName:shtContent})
-
-        workbook.Close()
-        xlsApp.Visible = True
+    try:
+        workbook = xlsApp.Workbooks.Open(filename, UpdateLinks=False, ReadOnly=False, Format=None, Password=password, WriteResPassword=password)
+    except:
         xlsApp.DisplayAlerts = True
         xlsApp.Quit()
         pythoncom.CoUninitialize()
-        return True
+        return False, {}
+
+    for sheet in workbook.Sheets:
+        shtName = sheet.Name
+        shtContent = sheet.UsedRange.Value
+        all_sheet_content.update({shtName:shtContent})
+
+    workbook.Close()
+    xlsApp.Visible = True
+    xlsApp.DisplayAlerts = True
+    xlsApp.Quit()
+    pythoncom.CoUninitialize()
+    return True, all_sheet_content
 
 
 """ 
@@ -399,6 +384,7 @@ class ExcelDataHandle(object):
         
         if empty_count == 12:
             row_status = ERROR_ROW_EMPTY
+            error_message = []
         
         return row_status, error_message
     
@@ -560,11 +546,11 @@ class ExcelDataHandle(object):
 
             if error_type == 'row':
                 for row, error_m in error_content.items():
-                    error_out_message.append('  SHEET名称:{:<30} 行号:{:>3d} 行错误:'.format(sheetname, row))
+                    error_out_message.append('  SHEET名称:{:<30} 行号:{:>3d} 行错误 ->'.format(sheetname, row))
                     error_out_message.extend(['{:4}{:0>2d}.{}'.format('', i, e) for i, e in enumerate(error_m)])
                     error_out_message.append('')
             elif error_type == 'title':
-                error_out_message.append('  SHEET名称:{:<30} 表头错误:'.format(sheetname))
+                error_out_message.append('  SHEET名称:{:<30} 表头错误 ->'.format(sheetname))
                 error_out_message.extend(['{:4}{:>2d}.{}'.format('', i, e) for i, e in enumerate(error_content)])
             error_out_message.append('')
             self.error_messages.extend(error_out_message)
@@ -632,8 +618,14 @@ VAL_ MessageId SignalName N “DefineN” …… 0 “Define0”;
 
 DEFULT_VAL = "Vector__XXX"
 class DBCGen(object):
+    def __init__(self) -> None:
+        super().__init__()
+        self.excel_data_handle  = ExcelDataHandle()
+
+
     def gen_version_code(self):
         self.version_code = """VERSION "" """
+
 
     def gen_ns_code(self):
         self.ns_code = """
