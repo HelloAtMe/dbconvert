@@ -7,16 +7,16 @@
             "user": "jxyun",
             "name": "Windows"
         },
-        "time": "2021-12-13 16:21:10"
+        "time": "2021-12-14 22:46:10"
     },
     "modify1": {
         "system": {
             "user": "jxyun",
             "name": "Windows"
         },
-        "time": "2021-12-13 16:21:10"
+        "time": "2021-12-15 08:44:00"
     },
-    "save": "2021-12-13 21:19:28",
+    "save": "2021-12-15 09:53:36",
     "widgets": {
         "topwidget": [
             "256696"
@@ -25,12 +25,13 @@
             "256696",
             "867723",
             "160480",
+            "507815",
             "817442",
             "347006",
             "443821",
             "512636",
             "391533",
-            "507815"
+            "009583"
         ],
         "map": {
             "256696": [
@@ -40,18 +41,20 @@
                 "347006",
                 "443821",
                 "512636",
-                "391533"
+                "391533",
+                "009583"
             ],
             "867723": [],
             "160480": [
                 "507815"
             ],
+            "507815": [],
             "817442": [],
             "347006": [],
             "443821": [],
             "512636": [],
             "391533": [],
-            "507815": []
+            "009583": []
         },
         "parameter": {
             "256696": {
@@ -69,7 +72,8 @@
                     "347006",
                     "443821",
                     "512636",
-                    "391533"
+                    "391533",
+                    "009583"
                 ],
                 "menu": {
                     "m000000": {
@@ -77,7 +81,7 @@
                         "type_id": 0,
                         "type": "cascade",
                         "name": "menu_cascade_File",
-                        "label": "File",
+                        "label": "\u6587\u4ef6",
                         "accelerator": "",
                         "row": 0,
                         "column": 0,
@@ -88,7 +92,7 @@
                         "type_id": 0,
                         "type": "command",
                         "name": "menu_command_Inport",
-                        "label": "Inport",
+                        "label": "\u5bfc\u5165\u6587\u4ef6",
                         "accelerator": "",
                         "row": 1,
                         "column": 0,
@@ -109,19 +113,22 @@
                         "self_id": "m000004",
                         "type_id": 2,
                         "type": "command",
-                        "name": "menu_command_02",
-                        "label": "Exit",
+                        "name": "menu_command_Exit",
+                        "label": "\u9000\u51fa\u7a0b\u5e8f",
                         "accelerator": "",
                         "row": 3,
                         "column": 0,
-                        "cmd_code": []
+                        "cmd_code": [
+                            "",
+                            "        self.destroy()"
+                        ]
                     },
                     "m000005": {
                         "self_id": "m000005",
                         "type_id": 1,
                         "type": "cascade",
                         "name": "menu_cascade_Edit",
-                        "label": "Edit",
+                        "label": "\u7f16\u8f91",
                         "accelerator": "",
                         "row": 0,
                         "column": 1,
@@ -132,18 +139,21 @@
                         "type_id": 3,
                         "type": "command",
                         "name": "menu_command_Start",
-                        "label": "Start",
+                        "label": "\u5f00\u59cb\u8f6c\u6362",
                         "accelerator": "",
                         "row": 1,
                         "column": 1,
-                        "cmd_code": []
+                        "cmd_code": [
+                            "",
+                            "        self.ButtonConvert.invoke()"
+                        ]
                     },
                     "m000007": {
                         "self_id": "m000007",
                         "type_id": 2,
                         "type": "cascade",
                         "name": "menu_cascade_Help",
-                        "label": "Help",
+                        "label": "\u5e2e\u52a9",
                         "accelerator": "",
                         "row": 0,
                         "column": 2,
@@ -154,18 +164,40 @@
                         "type_id": 1,
                         "type": "command",
                         "name": "menu_command_Setting",
-                        "label": "Setting",
+                        "label": "\u8bbe\u7f6e",
                         "accelerator": "",
                         "row": 2,
                         "column": 1,
                         "cmd_code": []
                     }
                 },
-                "import_code": [],
-                "periodic_code": [],
+                "import_code": [
+                    "",
+                    "from convert import DBCGen",
+                    "import threading",
+                    "from tkinter import filedialog"
+                ],
+                "periodic_code": [
+                    "",
+                    "        if self.dbcgen.running:",
+                    "            self.livecounter += 1",
+                    "            message = ['\u6b63\u5728\u8f6c\u6362DBC{}'.format('.'*(self.livecounter%6))]",
+                    "            self.ListboxLogListValues.set(value=message)",
+                    "        else:",
+                    "            if self.lastrunning:  # down ",
+                    "                self.livecounter = 0",
+                    "                self.ListboxLog.insert(1, '')",
+                    "                self.ListboxLog.insert(2, *self.dbcgen.generate_convert_result())",
+                    "        self.lastrunning = self.dbcgen.running"
+                ],
                 "quit_cmd_code": [],
                 "preshow_code": [],
-                "initial_code": [],
+                "initial_code": [
+                    "",
+                    "        self.livecounter = 0",
+                    "        self.lastrunning = False",
+                    "        self.dbcgen = DBCGen()"
+                ],
                 "evt_code_list": {},
                 "evt_list": [],
                 "virtual_evt_list": [],
@@ -178,7 +210,7 @@
                 "xresize": false,
                 "yresize": false,
                 "class_name": "DBConvertor",
-                "file_name": "dbconvert"
+                "file_name": "convert_main"
             },
             "867723": {
                 "type_name": "Label",
@@ -251,6 +283,44 @@
                 "width": 500,
                 "height": 320
             },
+            "507815": {
+                "type_name": "Listbox",
+                "self_id": "507815",
+                "type_id": "00",
+                "master_id": "160480",
+                "master_var_name": "Labelframe00",
+                "root_id": "256696",
+                "masters_id_list": [
+                    "256696",
+                    "160480"
+                ],
+                "var_name": "ListboxLog",
+                "children_id_list": [],
+                "evt_code_list": {},
+                "evt_list": [],
+                "virtual_evt_list": [
+                    "<Increment>",
+                    "<Decrement>"
+                ],
+                "foreground": "#000000",
+                "background": "#ECECEC",
+                "justify": "left",
+                "relief": "flat",
+                "selectmode": "browse",
+                "exportselection": true,
+                "cursor": "arrow",
+                "takefocus": true,
+                "fontfamily": "Fixdsys",
+                "fontsize": 9,
+                "fontweight": "normal",
+                "fontslant": "roman",
+                "tk_flag": true,
+                "scroll_type": "vertical",
+                "x": 0,
+                "y": 0,
+                "width": 500,
+                "height": 305
+            },
             "817442": {
                 "type_name": "Label",
                 "self_id": "817442",
@@ -298,7 +368,14 @@
                 ],
                 "var_name": "ButtonConvert",
                 "children_id_list": [],
-                "cmd_code": [],
+                "cmd_code": [
+                    "",
+                    "        xlsxname = self.TextExcelPath.get(1.0, 'end').strip()",
+                    "        password = self.EntryPasswordValue.get().strip()",
+                    "        task = threading.Thread(target=self.dbcgen.generate_dbc, args=(xlsxname, password), daemon=True)",
+                    "        if os.path.exists(xlsxname):",
+                    "            task.start()"
+                ],
                 "evt_code_list": {},
                 "evt_list": [],
                 "virtual_evt_list": [],
@@ -316,9 +393,9 @@
                 "fontweight": "normal",
                 "fontslant": "roman",
                 "tk_flag": false,
-                "x": 75,
-                "y": 280,
-                "width": 150,
+                "x": 170,
+                "y": 275,
+                "width": 99,
                 "height": 30,
                 "image_list": []
             },
@@ -401,7 +478,14 @@
                 ],
                 "var_name": "CheckbuttonShowPwdFlag",
                 "children_id_list": [],
-                "cmd_code": [],
+                "cmd_code": [
+                    "",
+                    "        if self.CheckbuttonShowPwdFlagValue.get():",
+                    "            character = ''",
+                    "        else:",
+                    "            character = '*'",
+                    "        self.EntryPassword.configure(show=character)"
+                ],
                 "evt_code_list": {},
                 "evt_list": [],
                 "virtual_evt_list": [],
@@ -426,43 +510,52 @@
                 "height": 30,
                 "image_list": []
             },
-            "507815": {
-                "type_name": "Listbox",
-                "self_id": "507815",
-                "type_id": "00",
-                "master_id": "160480",
-                "master_var_name": "Labelframe00",
+            "009583": {
+                "type_name": "Button",
+                "self_id": "009583",
+                "type_id": "01",
+                "master_id": "256696",
+                "master_var_name": "TopFrame",
                 "root_id": "256696",
                 "masters_id_list": [
-                    "256696",
-                    "160480"
+                    "256696"
                 ],
-                "var_name": "ListboxLog",
+                "var_name": "ButtonInportExcel",
                 "children_id_list": [],
+                "cmd_code": [
+                    "",
+                    "        xlsxname = filedialog.askopenfilename(",
+                    "            title='\u9009\u62e9CAN\u4fe1\u53f7\u77e9\u9635\u6587\u4ef6',",
+                    "            filetypes=[('Excel\u8868\u683c\u6587\u4ef6', '.xlsx'), ('\u6240\u6709\u6587\u4ef6', '.*')],",
+                    "            parent=self",
+                    "        )",
+                    "        if os.path.exists(xlsxname):",
+                    "            self.TextExcelPath.delete(1.0, 'end')",
+                    "            self.TextExcelPath.insert(1.0, xlsxname)",
+                    "            self.EntryPasswordValue.set(value='')"
+                ],
                 "evt_code_list": {},
                 "evt_list": [],
-                "virtual_evt_list": [
-                    "<Increment>",
-                    "<Decrement>"
-                ],
+                "virtual_evt_list": [],
+                "text": "\u5bfc\u5165\u6587\u4ef6",
                 "foreground": "#000000",
                 "background": "#ECECEC",
+                "anchor": "center",
                 "justify": "center",
-                "relief": "flat",
-                "selectmode": "browse",
-                "exportselection": true,
-                "cursor": "arrow",
+                "relief": "raised",
+                "compound": "center",
+                "cursor": "hand2",
                 "takefocus": true,
                 "fontfamily": "Fixdsys",
                 "fontsize": 9,
                 "fontweight": "normal",
                 "fontslant": "roman",
-                "tk_flag": true,
-                "scroll_type": "vertical",
-                "x": 0,
-                "y": 0,
-                "width": 500,
-                "height": 305
+                "tk_flag": false,
+                "x": 35,
+                "y": 275,
+                "width": 100,
+                "height": 30,
+                "image_list": []
             }
         }
     }

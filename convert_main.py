@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 '''
-@ File         : dbconvert.py
+@ File         : convert_main.py
 @ Project      : 
 @ Author       : 
 @ Contact      : 
-@ Date         : 2021-12-13 17:01:28
+@ Date         : 2021-12-15 09:26:28
 @ Description  : 
 '''
 
@@ -14,6 +14,9 @@ from tkinter import ttk
 
 # wing import
 # ===================================================
+from convert import DBCGen
+import threading
+from tkinter import filedialog
 
 # ===================================================
 
@@ -49,18 +52,37 @@ class DBConvertorGui(Tk):
         # Create Menu 
         self.main_menubar = Menu(self)
         self.menu_cascade_File = Menu(self.main_menubar, tearoff=0)
-        self.menu_cascade_File.add_command(label='Inport', command=self.menu_command_Inport_menucommand, accelerator='')
+        self.menu_cascade_File.add_command(label='导入文件', command=self.menu_command_Inport_menucommand, accelerator='')
         self.menu_cascade_File.add_separator()
-        self.menu_cascade_File.add_command(label='Exit', command=self.menu_command_02_menucommand, accelerator='')
-        self.main_menubar.add_cascade(label='File', menu=self.menu_cascade_File)
+        self.menu_cascade_File.add_command(label='退出程序', command=self.menu_command_Exit_menucommand, accelerator='')
+        self.main_menubar.add_cascade(label='文件', menu=self.menu_cascade_File)
         self.menu_cascade_Edit = Menu(self.main_menubar, tearoff=0)
-        self.menu_cascade_Edit.add_command(label='Start', command=self.menu_command_Start_menucommand, accelerator='')
-        self.menu_cascade_Edit.add_command(label='Setting', command=self.menu_command_Setting_menucommand, accelerator='')
-        self.main_menubar.add_cascade(label='Edit', menu=self.menu_cascade_Edit)
+        self.menu_cascade_Edit.add_command(label='开始转换', command=self.menu_command_Start_menucommand, accelerator='')
+        self.menu_cascade_Edit.add_command(label='设置', command=self.menu_command_Setting_menucommand, accelerator='')
+        self.main_menubar.add_cascade(label='编辑', menu=self.menu_cascade_Edit)
         self.menu_cascade_Help = Menu(self.main_menubar, tearoff=0)
-        self.main_menubar.add_cascade(label='Help', menu=self.menu_cascade_Help)
+        self.main_menubar.add_cascade(label='帮助', menu=self.menu_cascade_Help)
         self.configure(menu=self.main_menubar)
         
+        self.style.configure(
+            'ButtonInportExcel.TButton',
+            foreground      = '#000000',
+            background      = '#ECECEC',
+            font            = ('Fixdsys', 9, 'normal', 'roman'),
+            anchor          = 'center',
+            justify         = 'center',
+            relief          = 'raised'
+        )
+        self.ButtonInportExcel = ttk.Button( 
+            self.TopFrame,
+            textvariable    = self.ButtonInportExcelLabel,
+            image           = '',
+            compound        = 'center',
+            cursor          = 'hand2',
+            takefocus       = True,
+            command         = self.ButtonInportExcel_buttoncommand,
+            style           = 'ButtonInportExcel.TButton'
+        )
         self.Labelframe00 = LabelFrame(
             self.TopFrame,
             text            = '转换日志',
@@ -175,7 +197,7 @@ class DBConvertorGui(Tk):
             foreground      = '#000000',
             background      = '#ECECEC',
             font            = ('Fixdsys', 9, 'normal', 'roman'),
-            justify         = 'center',
+            justify         = 'left',
             relief          = 'flat'
         )
         self.ListboxLog_scrollbar_vertical   = ttk.Scrollbar(
@@ -200,6 +222,13 @@ class DBConvertorGui(Tk):
             relwidth=1, 
             relheight=1, 
             anchor='nw'
+        )
+        self.ButtonInportExcel.place(
+            x      = self.ButtonInportExcel_x,
+            y      = self.ButtonInportExcel_y,
+            width  = self.ButtonInportExcel_w,
+            height = self.ButtonInportExcel_h,
+            anchor = 'nw'
         )
         self.Labelframe00.place(
             x      = self.Labelframe00_x,
@@ -267,13 +296,17 @@ class DBConvertorGui(Tk):
 
 
     def _size(self):
+        self.ButtonInportExcel_x = 35
+        self.ButtonInportExcel_y = 275
+        self.ButtonInportExcel_w = 100
+        self.ButtonInportExcel_h = 30
         self.Labelframe00_x = 300
         self.Labelframe00_y = 0
         self.Labelframe00_w = 500
         self.Labelframe00_h = 320
-        self.ButtonConvert_x = 75
-        self.ButtonConvert_y = 280
-        self.ButtonConvert_w = 150
+        self.ButtonConvert_x = 170
+        self.ButtonConvert_y = 275
+        self.ButtonConvert_w = 99
         self.ButtonConvert_h = 30
         self.CheckbuttonShowPwdFlag_x = 108
         self.CheckbuttonShowPwdFlag_y = 200
@@ -315,6 +348,7 @@ class DBConvertorEvent(DBConvertorGui):
     def __init__(self):
         super().__init__()
         # appearance variables
+        self.ButtonInportExcelLabel = StringVar(value='导入文件')
         self.ButtonConvertLabel = StringVar(value='开始转换')
         self.CheckbuttonShowPwdFlagLabel   = StringVar(value='显示密码')
         self.CheckbuttonShowPwdFlagValue = BooleanVar(value=True)
@@ -325,17 +359,29 @@ class DBConvertorEvent(DBConvertorGui):
         self._create()
         # wing initial
         # ===================================================
+        self.livecounter = 0
+        self.lastrunning = False
+        self.dbcgen = DBCGen()
         
         # ===================================================
-        self.after(20, self.periodic)
+        self.after(50, self.periodic)
 
 
     def periodic(self):
         # wing periodcommand
         # ===================================================
-        
+        if self.dbcgen.running:
+            self.livecounter += 1
+            message = ['正在转换DBC{}->'.format('-'*(self.livecounter%6))]
+            self.ListboxLogListValues.set(value=message)
+        else:
+            if self.lastrunning:  # down 
+                self.livecounter = 0
+                self.ListboxLog.insert(1, '')
+                self.ListboxLog.insert(2, *self.dbcgen.generate_convert_result())
+        self.lastrunning = self.dbcgen.running
         # ===================================================
-        self.after(20, self.periodic)
+        self.after(50, self.periodic)
         
 
     def show(self, parameter=None):
@@ -357,41 +403,61 @@ class DBConvertorEvent(DBConvertorGui):
 
 
     def menu_command_Inport_menucommand(self):
-        # wing menucommand m000001 'Inport'
+        # wing menucommand m000001 '导入文件'
         # ===================================================
         pass
 
         # ===================================================
 
 
-    def menu_command_02_menucommand(self):
-        # wing menucommand m000004 'Exit'
+    def menu_command_Exit_menucommand(self):
+        # wing menucommand m000004 '退出程序'
         # ===================================================
-        pass
+        self.destroy()
 
         # ===================================================
 
 
     def menu_command_Start_menucommand(self):
-        # wing menucommand m000006 'Start'
+        # wing menucommand m000006 '开始转换'
         # ===================================================
-        pass
+        self.ButtonConvert.invoke()
 
         # ===================================================
 
 
     def menu_command_Setting_menucommand(self):
-        # wing menucommand m000002 'Setting'
+        # wing menucommand m000002 '设置'
         # ===================================================
         pass
 
+        # ===================================================
+
+
+    def ButtonInportExcel_buttoncommand(self):
+        # wing buttoncommand 009583
+        # ===================================================
+        xlsxname = filedialog.askopenfilename(
+            title='选择CAN信号矩阵文件',
+            filetypes=[('Excel表格文件', '.xlsx'), ('所有文件', '.*')],
+            parent=self
+        )
+        if os.path.exists(xlsxname):
+            self.TextExcelPath.delete(1.0, 'end')
+            self.TextExcelPath.insert(1.0, xlsxname)
+            self.EntryPasswordValue.set(value='')
+        
         # ===================================================
 
 
     def ButtonConvert_buttoncommand(self):
         # wing buttoncommand 347006
         # ===================================================
-        pass
+        xlsxname = self.TextExcelPath.get(1.0, 'end').strip()
+        password = self.EntryPasswordValue.get().strip()
+        task = threading.Thread(target=self.dbcgen.generate_dbc, args=(xlsxname, password), daemon=True)
+        if os.path.exists(xlsxname):
+            task.start()
         
         # ===================================================
 
@@ -399,7 +465,11 @@ class DBConvertorEvent(DBConvertorGui):
     def CheckbuttonShowPwdFlag_buttoncommand(self):
         # wing buttoncommand 391533
         # ===================================================
-        pass
+        if self.CheckbuttonShowPwdFlagValue.get():
+            character = ''
+        else:
+            character = '*'
+        self.EntryPassword.configure(show=character)
         
         # ===================================================
         

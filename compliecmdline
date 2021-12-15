@@ -1,0 +1,7 @@
+windows:
+python -m nuitka --standalone --mingw64 --follow-imports --remove-output --windows-disable-console --include-data-dir=img=img --plugin-enable=tk-inter --output-dir=Release convert_main.py
+
+python -m nuitka --standalone --mingw64 --follow-imports --remove-output --windows-disable-console --plugin-enable=tk-inter --output-dir=Release convert_main.py
+
+windows-module:
+python -m nuitka --module --remove-output --mingw64 --no-pyi-file can_driver.py & python -m nuitka --module --remove-output --mingw64 --no-pyi-file can_handle.py & python -m nuitka --module --remove-output --mingw64 --no-pyi-file flash_process.py & python -m nuitka --module --remove-output --mingw64 --no-pyi-file encrypt.py & python -m nuitka --module --remove-output --mingw64 --no-pyi-file flash_protocol.py & python -m nuitka --module --remove-output --mingw64 --no-pyi-file frame_handle.py & python -m nuitka --module --remove-output --mingw64 --no-pyi-file misflash.py & python -m nuitka --module --remove-output --mingw64 --no-pyi-file query_protocol.py & python -m nuitka --module --remove-output --mingw64 --no-pyi-file query_process.py & python -m nuitka --module --remove-output --mingw64 --no-pyi-file source_handle.py
