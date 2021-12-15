@@ -557,7 +557,7 @@ class ExcelDataHandle(object):
                     error_out_message.append('')
             elif error_type == 'title':
                 error_out_message.append('  SHEET名称:{:<30} 表头错误 ->'.format(sheetname))
-                error_out_message.extend(['{:4}{:>2d}.{}'.format('', i, e) for i, e in enumerate(error_content)])
+                error_out_message.extend(['{:4}{:0>2d}.{}'.format('', i, e) for i, e in enumerate(error_content)])
                 error_out_message.append('')
             self.error_messages.extend(error_out_message)
 
@@ -717,10 +717,10 @@ class DBCGen(object):
         path = os.path.dirname(xlsxname)
 
         sheets = read_excel(xlsxname, password)
-        print('open excel')
+        # print('open excel')
 
         self.excel_data_handle.handle_data(sheets)
-        print('handle data')
+        # print('handle data')
 
         for sheetname, contents in self.excel_data_handle.extract_contents.items():
             filename = sheetname.replace(' ', '_')+'.dbc'
