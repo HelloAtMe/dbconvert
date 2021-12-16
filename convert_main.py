@@ -151,7 +151,7 @@ class DBConvertorGui(Tk):
         )
         self.TextExcelPath = Text(
             self.TopFrame,
-            wrap            = 'none',
+            wrap            = 'word',
             cursor          = 'arrow',
             takefocus       = True,
             foreground      = '#000000',
@@ -405,7 +405,7 @@ class DBConvertorEvent(DBConvertorGui):
     def menu_command_Inport_menucommand(self):
         # wing menucommand m000001 '导入文件'
         # ===================================================
-        pass
+        self.ButtonInportExcel.invoke()
 
         # ===================================================
 
