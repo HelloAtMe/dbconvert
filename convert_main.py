@@ -4,7 +4,7 @@
 @ Project      : 
 @ Author       : 
 @ Contact      : 
-@ Date         : 2021-12-15 09:26:28
+@ Date         : 2021-12-21 10:36:09
 @ Description  : 
 '''
 
@@ -17,7 +17,8 @@ from tkinter import ttk
 from convert import DBCGen
 import threading
 from tkinter import filedialog
-
+from setting import DBCSettingEvent
+from setting_handle import *
 # ===================================================
 
 
@@ -151,7 +152,7 @@ class DBConvertorGui(Tk):
         )
         self.TextExcelPath = Text(
             self.TopFrame,
-            wrap            = 'word',
+            wrap            = 'none',
             cursor          = 'arrow',
             takefocus       = True,
             foreground      = '#000000',
@@ -362,9 +363,33 @@ class DBConvertorEvent(DBConvertorGui):
         self.livecounter = 0
         self.lastrunning = False
         self.dbcgen = DBCGen()
+
+        if not os.path.exists(SETTING):
+            initial_setting()
+            self.setting_configure = {
+            'Configure Style' : "Auto",
+            'Table Configure' : {
+                "MsgName" : 0,
+                "MsgID" : 0,
+                "MsgCycleTime" : 0,
+                "MsgLen" : 0,
+                "SignalName" : 0,
+                "ByteOrder" : 0,
+                "StartBit" : 0,
+                "BitLen" : 0,
+                "Resolution" : 0,
+                "Offset" : 0,
+                "Maxv" : 0,
+                "Minv" : 0,
+                "Unit" : 0,
+            }
+        }
+        else:
+            self.setting_configure = read_setting()
+
         
         # ===================================================
-        self.after(50, self.periodic)
+        self.after(20, self.periodic)
 
 
     def periodic(self):
@@ -380,8 +405,9 @@ class DBConvertorEvent(DBConvertorGui):
                 self.ListboxLog.insert(1, '')
                 self.ListboxLog.insert(2, *self.dbcgen.generate_convert_result())
         self.lastrunning = self.dbcgen.running
+        
         # ===================================================
-        self.after(50, self.periodic)
+        self.after(20, self.periodic)
         
 
     def show(self, parameter=None):
@@ -397,7 +423,7 @@ class DBConvertorEvent(DBConvertorGui):
     def quit_window_command(self):
         # wing quitcommand
         # ===================================================
-        
+        write_setting(self.setting_configure)
         # ===================================================
         self.destroy()
 
@@ -429,7 +455,7 @@ class DBConvertorEvent(DBConvertorGui):
     def menu_command_Setting_menucommand(self):
         # wing menucommand m000002 '设置'
         # ===================================================
-        pass
+        DBCSettingEvent(self).show()
 
         # ===================================================
 
@@ -455,7 +481,7 @@ class DBConvertorEvent(DBConvertorGui):
         # ===================================================
         xlsxname = self.TextExcelPath.get(1.0, 'end').strip()
         password = self.EntryPasswordValue.get().strip()
-        task = threading.Thread(target=self.dbcgen.generate_dbc, args=(xlsxname, password), daemon=True)
+        task = threading.Thread(target=self.dbcgen.generate_dbc, args=(xlsxname, password, self.setting_configure), daemon=True)
         if os.path.exists(xlsxname):
             task.start()
         

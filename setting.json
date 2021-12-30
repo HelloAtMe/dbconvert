@@ -1,0 +1,18 @@
+{
+    "Configure Style": "Auto",
+    "Table Configure": {
+        "MsgName": 1,
+        "MsgID": 2,
+        "MsgCycleTime": 3,
+        "MsgLen": 4,
+        "SignalName": 5,
+        "ByteOrder": 6,
+        "StartBit": 8,
+        "BitLen": 9,
+        "Resolution": 10,
+        "Offset": 11,
+        "Maxv": 12,
+        "Minv": 13,
+        "Unit": 14
+    }
+}
