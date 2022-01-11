@@ -368,7 +368,7 @@ class ExcelDataHandle(object):
         status, unit = self.unit_check(unit)
 
         if row_status == ERROR_ROW_OK:
-            if byteorder == '1':
+            if byteorder == '0':
                 startbit = self.caculate_motorola_startbit(startbit, bitlen)
             self.extract_contents[sheetname].append(
                 {
