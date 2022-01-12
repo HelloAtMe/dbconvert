@@ -367,9 +367,14 @@ class ExcelDataHandle(object):
         unit         = row[self.unit_col_num]
         status, unit = self.unit_check(unit)
 
+        if byteorder == '0': # ''motorola is 0 intel is 1 and 0 need to be changed
+            startbit_status, startbit = self.caculate_motorola_startbit(startbit, bitlen)
+            if not startbit_status:
+                row_status = ERROR_ROW_ERROR
+                error_message.append('起始位:{} 长度:{} => 超出范围'.format(startbit, bitlen))
+        
         if row_status == ERROR_ROW_OK:
-            if byteorder == '0':
-                startbit = self.caculate_motorola_startbit(startbit, bitlen)
+            
             self.extract_contents[sheetname].append(
                 {
                     'msgname'       : msgname,
@@ -552,14 +557,21 @@ class ExcelDataHandle(object):
 
 
     def caculate_motorola_startbit(self, startbit="", bitlen=""):
-        bitlen = int(bitlen)
         mot_startbit = ""
+        status = False
+        bitlen = int(bitlen)
         bitbox = []
         for i in range(8):
             for j in range(8):
                 bitbox.append(str((7-i)*8+j))
-        mot_startbit = str(bitbox[bitbox.index(startbit)+bitlen-1])
-        return mot_startbit
+        if startbit in bitbox:
+            bitpos = bitbox.index(startbit)+bitlen-1
+            if bitpos in range(0, 64):
+                mot_startbit = str(bitbox[bitbox.index(startbit)+bitlen-1])
+                status = True
+        if not status:
+            mot_startbit = startbit
+        return status, mot_startbit
 
 
     def format_error_message(self):
