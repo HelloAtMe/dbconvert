@@ -99,130 +99,133 @@ class ExcelDataHandle(object):
         column_miss_count = 0
         error_message = []
 
-        if configStyle == 'Auto':
-            
-            # all column number base 0
-            self.msgname_col_num        = -1
-            self.msgid_col_num          = -1
-            self.msgcycletime_col_num   = -1
-            self.msglength_col_num      = -1
-            self.signalname_col_num     = -1
-            self.byteorder_col_num      = -1
-            self.startbit_col_num       = -1
-            self.bitlen_col_num         = -1
-            self.resolution_col_num     = -1
-            self.offset_col_num         = -1
-            self.maxv_col_num           = -1
-            self.minv_col_num           = -1
-            self.unit_col_num           = -1
+        if worksheet and setting_configure:
 
-            first_row = worksheet[0]
+            if configStyle == 'Auto':
+                
+                # all column number base 0
+                self.msgname_col_num        = -1
+                self.msgid_col_num          = -1
+                self.msgcycletime_col_num   = -1
+                self.msglength_col_num      = -1
+                self.signalname_col_num     = -1
+                self.byteorder_col_num      = -1
+                self.startbit_col_num       = -1
+                self.bitlen_col_num         = -1
+                self.resolution_col_num     = -1
+                self.offset_col_num         = -1
+                self.maxv_col_num           = -1
+                self.minv_col_num           = -1
+                self.unit_col_num           = -1
 
-            for idx, cell in enumerate(first_row):
-                if not isinstance(cell, str):
-                    continue
-                msgname_match       = re.match(r".*Msg.*Name.*\s.*报文名称", cell)
-                msgid_match         = re.match(r".*Msg.*ID.*\s.*报文标识符", cell)
-                msgcycletime_match  = re.match(r".*Msg.*Cycle.*Time.*\s.*报文周期时间", cell)
-                msglength_match     = re.match(r".*Msg.*Length.*\s.*报文长度", cell)
-                signalname_match    = re.match(r".*Signal.*Name.*\s.*信号名称.*英.*", cell)
-                byteorder_match     = re.match(r".*Byte.*Order.*\s.*排列格式", cell)
-                startbit_match      = re.match(r".*Start.*Bit.*\s.*起始位", cell)
-                bitlen_match        = re.match(r".*Bit.*Length.*\s.*信号长度", cell)
-                resolution_match    = re.match(r".*Resolution.*\s.*精度", cell)
-                offset_match        = re.match(r".*Offset.*\s.*偏移量", cell)
-                maxv_match          = re.match(r".*Signal.*Max..*Value.*phys.*\s.*物理最大值", cell)
-                minv_match          = re.match(r".*Signal.*Min..*Value.*phys.*\s.*物理最小值", cell)
-                unit_match          = re.match(r".*Unit.*\s.*单位", cell)
-            
-                if msgname_match:
-                    self.msgname_col_num        = idx    
-                elif msgid_match:
-                    self.msgid_col_num          = idx
-                elif msgcycletime_match:
-                    self.msgcycletime_col_num   = idx        
-                elif msglength_match:
-                    self.msglength_col_num      = idx    
-                elif signalname_match:
-                    self.signalname_col_num     = idx    
-                elif byteorder_match:
-                    self.byteorder_col_num      = idx    
-                elif startbit_match:
-                    self.startbit_col_num       = idx    
-                elif bitlen_match:
-                    self.bitlen_col_num         = idx
-                elif resolution_match:
-                    self.resolution_col_num     = idx    
-                elif offset_match:
-                    self.offset_col_num         = idx
-                elif maxv_match:
-                    self.maxv_col_num           = idx
-                elif minv_match:
-                    self.minv_col_num           = idx
-                elif unit_match:
-                    self.unit_col_num           = idx
-            
-            if self.msgname_col_num      == -1:
-                column_miss_count += 1
-                error_message.append('{:<10} 表头未发现.'.format('报文名称'))
-            if self.msgid_col_num        == -1:
-                column_miss_count += 1
-                error_message.append('{:<10} 表头未发现.'.format('报文标识符'))
-            if self.msgcycletime_col_num == -1:
-                column_miss_count += 1
-                error_message.append('{:<10} 表头未发现.'.format('报文周期时间'))
-            if self.msglength_col_num    == -1:
-                column_miss_count += 1
-                error_message.append('{:<10} 表头未发现.'.format('报文长度'))
-            if self.signalname_col_num   == -1:
-                column_miss_count += 1
-                error_message.append('{:<10} 表头未发现.'.format('信号名称'))
-            if self.byteorder_col_num    == -1:
-                column_miss_count += 1
-                error_message.append('{:<10} 表头未发现.'.format('排列格式'))
-            if self.startbit_col_num     == -1:
-                column_miss_count += 1
-                error_message.append('{:<10} 表头未发现.'.format('起始位'))
-            if self.bitlen_col_num       == -1:
-                column_miss_count += 1
-                error_message.append('{:<10} 表头未发现.'.format('信号长度'))
-            if self.resolution_col_num   == -1:
-                column_miss_count += 1
-                error_message.append('{:<10} 表头未发现.'.format('精度'))
-            if self.offset_col_num       == -1:
-                column_miss_count += 1
-                error_message.append('{:<10} 表头未发现.'.format('偏移量'))
-            if self.maxv_col_num         == -1:
-                column_miss_count += 1
-                error_message.append('{:<10} 表头未发现.'.format('物理最大值'))
-            if self.minv_col_num         == -1:
-                column_miss_count += 1
-                error_message.append('{:<10} 表头未发现.'.format('物理最小值'))
-            if self.unit_col_num         == -1:
-                column_miss_count += 1
-                error_message.append('{:<10} 表头未发现.'.format('单位'))
-        elif configStyle == 'Manual':
-            self.msgname_col_num        = configInfo['MsgName']
-            self.msgid_col_num          = configInfo['MsgID']
-            self.msgcycletime_col_num   = configInfo['MsgCycleTime']
-            self.msglength_col_num      = configInfo['MsgLen']
-            self.signalname_col_num     = configInfo['SignalName']
-            self.byteorder_col_num      = configInfo['ByteOrder']
-            self.startbit_col_num       = configInfo['StartBit']
-            self.bitlen_col_num         = configInfo['BitLen']
-            self.resolution_col_num     = configInfo['Resolution']
-            self.offset_col_num         = configInfo['Offset']
-            self.maxv_col_num           = configInfo['Maxv']
-            self.minv_col_num           = configInfo['Minv']
-            self.unit_col_num           = configInfo['Unit']
+                first_row = worksheet[0]
 
-        if column_miss_count == 0:
-            return ERROR_SHEET_OK, None
-        elif column_miss_count > 0 and column_miss_count < 3:
-            return ERROR_SHEET_TITLE_UNMATCH, error_message[:]
+                for idx, cell in enumerate(first_row):
+                    if not isinstance(cell, str):
+                        continue
+                    msgname_match       = re.match(r".*Msg.*Name.*\s.*报文名称", cell)
+                    msgid_match         = re.match(r".*Msg.*ID.*\s.*报文标识符", cell)
+                    msgcycletime_match  = re.match(r".*Msg.*Cycle.*Time.*\s.*报文周期时间", cell)
+                    msglength_match     = re.match(r".*Msg.*Length.*\s.*报文长度", cell)
+                    signalname_match    = re.match(r".*Signal.*Name.*\s.*信号名称.*英.*", cell)
+                    byteorder_match     = re.match(r".*Byte.*Order.*\s.*排列格式", cell)
+                    startbit_match      = re.match(r".*Start.*Bit.*\s.*起始位", cell)
+                    bitlen_match        = re.match(r".*Bit.*Length.*\s.*信号长度", cell)
+                    resolution_match    = re.match(r".*Resolution.*\s.*精度", cell)
+                    offset_match        = re.match(r".*Offset.*\s.*偏移量", cell)
+                    maxv_match          = re.match(r".*Signal.*Max..*Value.*phys.*\s.*物理最大值", cell)
+                    minv_match          = re.match(r".*Signal.*Min..*Value.*phys.*\s.*物理最小值", cell)
+                    unit_match          = re.match(r".*Unit.*\s.*单位", cell)
+                
+                    if msgname_match:
+                        self.msgname_col_num        = idx    
+                    elif msgid_match:
+                        self.msgid_col_num          = idx
+                    elif msgcycletime_match:
+                        self.msgcycletime_col_num   = idx        
+                    elif msglength_match:
+                        self.msglength_col_num      = idx    
+                    elif signalname_match:
+                        self.signalname_col_num     = idx    
+                    elif byteorder_match:
+                        self.byteorder_col_num      = idx    
+                    elif startbit_match:
+                        self.startbit_col_num       = idx    
+                    elif bitlen_match:
+                        self.bitlen_col_num         = idx
+                    elif resolution_match:
+                        self.resolution_col_num     = idx    
+                    elif offset_match:
+                        self.offset_col_num         = idx
+                    elif maxv_match:
+                        self.maxv_col_num           = idx
+                    elif minv_match:
+                        self.minv_col_num           = idx
+                    elif unit_match:
+                        self.unit_col_num           = idx
+                
+                if self.msgname_col_num      == -1:
+                    column_miss_count += 1
+                    error_message.append('{:<10} 表头未发现.'.format('报文名称'))
+                if self.msgid_col_num        == -1:
+                    column_miss_count += 1
+                    error_message.append('{:<10} 表头未发现.'.format('报文标识符'))
+                if self.msgcycletime_col_num == -1:
+                    column_miss_count += 1
+                    error_message.append('{:<10} 表头未发现.'.format('报文周期时间'))
+                if self.msglength_col_num    == -1:
+                    column_miss_count += 1
+                    error_message.append('{:<10} 表头未发现.'.format('报文长度'))
+                if self.signalname_col_num   == -1:
+                    column_miss_count += 1
+                    error_message.append('{:<10} 表头未发现.'.format('信号名称'))
+                if self.byteorder_col_num    == -1:
+                    column_miss_count += 1
+                    error_message.append('{:<10} 表头未发现.'.format('排列格式'))
+                if self.startbit_col_num     == -1:
+                    column_miss_count += 1
+                    error_message.append('{:<10} 表头未发现.'.format('起始位'))
+                if self.bitlen_col_num       == -1:
+                    column_miss_count += 1
+                    error_message.append('{:<10} 表头未发现.'.format('信号长度'))
+                if self.resolution_col_num   == -1:
+                    column_miss_count += 1
+                    error_message.append('{:<10} 表头未发现.'.format('精度'))
+                if self.offset_col_num       == -1:
+                    column_miss_count += 1
+                    error_message.append('{:<10} 表头未发现.'.format('偏移量'))
+                if self.maxv_col_num         == -1:
+                    column_miss_count += 1
+                    error_message.append('{:<10} 表头未发现.'.format('物理最大值'))
+                if self.minv_col_num         == -1:
+                    column_miss_count += 1
+                    error_message.append('{:<10} 表头未发现.'.format('物理最小值'))
+                if self.unit_col_num         == -1:
+                    column_miss_count += 1
+                    error_message.append('{:<10} 表头未发现.'.format('单位'))
+            elif configStyle == 'Manual':
+                self.msgname_col_num        = configInfo['MsgName']
+                self.msgid_col_num          = configInfo['MsgID']
+                self.msgcycletime_col_num   = configInfo['MsgCycleTime']
+                self.msglength_col_num      = configInfo['MsgLen']
+                self.signalname_col_num     = configInfo['SignalName']
+                self.byteorder_col_num      = configInfo['ByteOrder']
+                self.startbit_col_num       = configInfo['StartBit']
+                self.bitlen_col_num         = configInfo['BitLen']
+                self.resolution_col_num     = configInfo['Resolution']
+                self.offset_col_num         = configInfo['Offset']
+                self.maxv_col_num           = configInfo['Maxv']
+                self.minv_col_num           = configInfo['Minv']
+                self.unit_col_num           = configInfo['Unit']
+
+            if column_miss_count == 0:
+                return ERROR_SHEET_OK, None
+            elif column_miss_count > 0 and column_miss_count < 3:
+                return ERROR_SHEET_TITLE_UNMATCH, error_message[:]
+            else:
+                return ERROR_SHEET_ERROR, None
         else:
             return ERROR_SHEET_ERROR, None
-
 
     # extract the key info like msgid msgname ... 
     # put them into self.extract_contents and self.error_contents
