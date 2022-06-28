@@ -659,42 +659,43 @@ VAL_
 VAL_ MessageId SignalName N “DefineN” …… 0 “Define0”;
 """
 
-DBC_MODULE = '''
-VERSION "" 
+DBC_MODULE = '''VERSION ""
 
-NS_ :
-    NS_DESC_
-    CM_
-    BA_DEF_
-    BA_
-    VAL_
-    CAT_DEF_
-    CAT_
-    FILTER
-    BA_DEF_DEF_
-    EV_DATA_
-    ENVVAR_DATA_
-    SGTYPE_
-    SGTYPE_VAL_
-    BA_DEF_SGTYPE_
-    BA_SGTYPE_
-    SIG_TYPE_REF_
-    VAL_TABLE_
-    SIG_GROUP_
-    SIG_VALTYPE_
-    SIGTYPE_VALTYPE_
-    BO_TX_BU_
-    BA_DEF_REL_
-    BA_REL_
-    BA_DEF_DEF_REL_
-    BU_SG_REL_
-    BU_EV_REL_
-    BU_BO_REL_
-    SG_MUL_VAL_
+
+NS_ : 
+\tNS_DESC_
+\tCM_
+\tBA_DEF_
+\tBA_
+\tVAL_
+\tCAT_DEF_
+\tCAT_
+\tFILTER
+\tBA_DEF_DEF_
+\tEV_DATA_
+\tENVVAR_DATA_
+\tSGTYPE_
+\tSGTYPE_VAL_
+\tBA_DEF_SGTYPE_
+\tBA_SGTYPE_
+\tSIG_TYPE_REF_
+\tVAL_TABLE_
+\tSIG_GROUP_
+\tSIG_VALTYPE_
+\tSIGTYPE_VALTYPE_
+\tBO_TX_BU_
+\tBA_DEF_REL_
+\tBA_REL_
+\tBA_DEF_DEF_REL_
+\tBU_SG_REL_
+\tBU_EV_REL_
+\tBU_BO_REL_
+\tSG_MUL_VAL_
 
 BS_:
 
-BU_: {nodes}
+BU_:{nodes}
+
 
 {bosg}
 
@@ -738,7 +739,7 @@ class DBCGen(object):
                     if firstfound:
                         firstfound = False
                         bosg_code += "BO_ {msgid} {msgname}: {msglength} {transmitter}\n".format(**s)
-                    bosg_code += " SG_ {signalname} : {startbit}|{bitlen}@{byteorder}{valuetype} ({resolution},{offset}) [{maxv}|{minv}] \"{unit}\" {receiver}\n".format(**s)
+                    bosg_code += " SG_ {signalname} : {startbit}|{bitlen}@{byteorder}{valuetype} ({resolution},{offset}) [{minv}|{maxv}] \"{unit}\" {receiver}\n".format(**s)
             bosg_code += '\n'
         return bosg_code
 
