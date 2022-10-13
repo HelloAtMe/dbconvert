@@ -14,7 +14,7 @@ from tkinter import ttk
 
 # wing import
 # ===================================================
-
+VERSION_TEXT = 'V10.0.0'
 # ===================================================
 
 
@@ -87,7 +87,14 @@ class HelpPanel(HelpPanelGui):
         super().__init__(master)
         self.style = master.style
         # appearance variables
-        self.Label00Label   = StringVar(value='Version: V10.0.0')
+        self.Label00Label   = StringVar(
+            value='''Version: {}\n
+    Any bugs, contact me at 935716406@qq.com\n
+
+Description: This applicatio is used to 
+decode the dbc files from excel.
+        '''.format(VERSION_TEXT)
+        )
         self._create()
         # wing initial
         # ===================================================
