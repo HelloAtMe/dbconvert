@@ -371,10 +371,16 @@ class ExcelDataHandle(object):
         status, unit = self.unit_check(unit)
 
         if byteorder == '0': # ''motorola is 0 intel is 1 and 0 need to be changed
-            startbit_status, startbit = self.caculate_motorola_startbit(startbit, bitlen)
-            if not startbit_status:
-                row_status = ERROR_ROW_ERROR
-                error_message.append('起始位:{} 长度:{} => 超出范围'.format(startbit, bitlen))
+            if bitlen != None and startbit != None:
+                startbit_status, startbit = self.caculate_motorola_startbit(startbit, bitlen)
+                if not startbit_status:
+                    row_status = ERROR_ROW_ERROR
+                    error_message.append('起始位:{} 长度:{} => 超出范围'.format(startbit, bitlen))
+            else:
+                startbit_status = False
+                if not startbit_status:
+                    row_status = ERROR_ROW_ERROR
+                    error_message.append('起始位:{} 长度:{} => 空字符'.format(startbit, bitlen))
         
         if row_status == ERROR_ROW_OK:
             

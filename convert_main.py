@@ -19,6 +19,7 @@ import threading
 from tkinter import filedialog
 from setting import DBCSettingEvent
 from setting_handle import *
+import help_panel
 # ===================================================
 
 
@@ -63,6 +64,7 @@ class DBConvertorGui(Tk):
         self.main_menubar.add_cascade(label='编辑', menu=self.menu_cascade_Edit)
         self.menu_cascade_Help = Menu(self.main_menubar, tearoff=0)
         self.main_menubar.add_cascade(label='帮助', menu=self.menu_cascade_Help)
+        self.menu_cascade_Help.add_command(label='版本', command=self.menu_command_ShowVer_menucommand, accelerator='')
         self.configure(menu=self.main_menubar)
         
         self.style.configure(
@@ -448,6 +450,13 @@ class DBConvertorEvent(DBConvertorGui):
         # wing menucommand m000006 '开始转换'
         # ===================================================
         self.ButtonConvert.invoke()
+
+        # ===================================================
+
+    def menu_command_ShowVer_menucommand(self):
+        # wing menucommand m000006 '开始转换'
+        # ===================================================
+        help_panel.HelpPanel(self).show()
 
         # ===================================================
 
